@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document>
+    <Header>
+        <Title>Test Document</Title>
+        <Date>2024-01-01</Date>
+    </Header>
+    <Body>
+        <Content>This is a test document.</Content>
+    </Body>
+</Document>
