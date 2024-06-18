@@ -2,10 +2,10 @@ package com.xmldsig;
 
 import org.apache.xml.security.Init;
 import org.apache.xml.security.transforms.Transforms;
-import org.apache.xml.security.utils.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+
 
 import javax.xml.crypto.dsig.CanonicalizationMethod;
 import javax.xml.crypto.dsig.DigestMethod;
@@ -23,6 +23,7 @@ import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
 
 import java.security.PrivateKey;
+import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,14 +33,17 @@ public class XMLSigner {
 
 	static {
 		Init.init();
-	}
+//		if (Security.getProvider(JCP.PROVIDER_NAME) == null) {
+//			Security.addProvider(new JCP());
+		}
+
 
 	public static void signXMLDocument(Document document, PrivateKey privateKey, X509Certificate certificate) throws Exception {
 		XMLSignatureFactory factory = XMLSignatureFactory.getInstance("DOM");
 
-		DigestMethod digestMethod = factory.newDigestMethod(DigestMethod.SHA1, null);
+		DigestMethod digestMethod = factory.newDigestMethod("http://www.w3.org/2001/04/xmldsig-more#gostr3411", null);
 		CanonicalizationMethod cm = factory.newCanonicalizationMethod(CanonicalizationMethod.EXCLUSIVE_WITH_COMMENTS, (C14NMethodParameterSpec) null);
-		SignatureMethod sm = factory.newSignatureMethod(SignatureMethod.RSA_SHA1, null);
+		SignatureMethod sm = factory.newSignatureMethod("http://www.w3.org/2001/04/xmldsig-more#gostr34102001-gostr3411", null);
 
 		Transform envTransform = factory.newTransform(Transforms.TRANSFORM_ENVELOPED_SIGNATURE, (TransformParameterSpec) null);
 		Transform exc14nTransform = factory.newTransform(CanonicalizationMethod.EXCLUSIVE, (TransformParameterSpec) null);

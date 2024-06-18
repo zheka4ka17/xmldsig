@@ -3,6 +3,7 @@ package com.xmldsig;
 import org.apache.xml.security.utils.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import ru.CryptoPro.JCP.JCP;
 
 
 import java.io.File;
@@ -11,12 +12,14 @@ import java.nio.file.Files;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.Security;
 import java.security.cert.X509Certificate;
 import static com.xmldsig.XMLSigner.signXMLDocument;
 
 public class Main {
 
 	public static void main(String[] args) throws NoSuchAlgorithmException {
+
 
 		if (args.length > 0 && "--help".equals(args[0])) {
 			printHelp();
