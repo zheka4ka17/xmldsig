@@ -2,6 +2,9 @@ package com.xmldsig;
 
 import org.apache.xml.security.utils.XMLUtils;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
@@ -15,6 +18,12 @@ public class Main {
 
 	public static void main(String[] args) throws NoSuchAlgorithmException {
 
+		if (args.length > 0 && "--help".equals(args[0])) {
+			printHelp();
+			return;
+		}
+
+
 		if (args.length != 2) {
 			System.err.println("Invalid parameters");
 			System.exit(1);
@@ -25,7 +34,7 @@ public class Main {
 		for (String arg : args) {
 			if (arg.endsWith(".xml")) {
 				xmlFilePath = arg;
-			} else if (arg.endsWith(".crt")) {
+			} else if (arg.endsWith(".crt") || arg.endsWith(".cer")) {
 				certFilePath = arg;
 			} else {
 				System.err.println("Invalid parameter: " + arg);
@@ -34,17 +43,22 @@ public class Main {
 		}
 
 		checkParameters(xmlFilePath, certFilePath);
-        //Вопрос мы получаем сертификат или keyStore файл
-		PrivateKey privateKey = getPrivateKey();
 
+		PrivateKey privateKey = getPrivateKey();
 
 
 		try {
 			Document document = XMLLoader.loadXMLDocument(xmlFilePath);
+
 			X509Certificate cert = CrtLoader.loadCertificate(certFilePath);
 			signXMLDocument(document, privateKey, cert);
 
-			try (FileOutputStream fos = new FileOutputStream("signed_document.xml")) {
+			normalizeElementValue(document, "SignatureValue");
+			normalizeElementValue(document, "X509Certificate");
+
+			String newXmlFilePath = addPrefixToFilePath(xmlFilePath);
+
+			try (FileOutputStream fos = new FileOutputStream(newXmlFilePath)) {
 				XMLUtils.outputDOM(document, fos);
 			}
 		} catch (Exception e) {
@@ -52,10 +66,10 @@ public class Main {
 			System.exit(1);
 		}
 
-		System.out.println("Signed document");
+		System.out.println("The document has been signed");
 	}
 
-	private static void checkParameters(String xmlFilePath, String certFilePath){
+	private static void checkParameters(String xmlFilePath, String certFilePath) {
 		if (xmlFilePath == null || certFilePath == null) {
 			System.err.println("Missing required parameters");
 			System.exit(1);
@@ -70,7 +84,7 @@ public class Main {
 		}
 	}
 
-	private static PrivateKey getPrivateKey(){
+	private static PrivateKey getPrivateKey() {
 		KeyGenerator keyGenerator = new KeyGenerator();
 		KeyPair keyPair = null;
 		try {
@@ -84,6 +98,30 @@ public class Main {
 	}
 
 
+	private static String addPrefixToFilePath(String filePath) {
+		File file = new File(filePath);
+		String fileName = file.getName();
+		return "singed_" + fileName;
 	}
+
+
+	public static void printHelp() {
+		System.out.println("Usage: java -jar yourfile.jar <xml> <cer>");
+		System.out.println("Options:");
+		System.out.println("  --help       Show this help message");
+		System.out.println("Required arguments:");
+		System.out.println("  xml          Path to the XML file");
+		System.out.println("  crt          Path to the CRT/CER file");
+	}
+
+	private static void normalizeElementValue(Document document, String tagName) {
+		Element element = (Element) document.getElementsByTagName(tagName).item(0);
+		if (element != null) {
+			String content = element.getTextContent().replaceAll("[\\r\\n]+", "");
+			element.setTextContent(content);
+		}
+
+	}
+}
 
 
