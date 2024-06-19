@@ -42,7 +42,7 @@ public class XMLSigner {
 		XMLSignatureFactory factory = XMLSignatureFactory.getInstance("DOM");
 
 		DigestMethod digestMethod = factory.newDigestMethod(DigestMethod.SHA1, null);
-		CanonicalizationMethod cm = factory.newCanonicalizationMethod(CanonicalizationMethod.EXCLUSIVE_WITH_COMMENTS, (C14NMethodParameterSpec) null);
+		CanonicalizationMethod cm = factory.newCanonicalizationMethod(CanonicalizationMethod.EXCLUSIVE, (C14NMethodParameterSpec) null);
 		SignatureMethod sm = factory.newSignatureMethod(SignatureMethod.RSA_SHA1, null);
 
 		Transform envTransform = factory.newTransform(Transforms.TRANSFORM_ENVELOPED_SIGNATURE, (TransformParameterSpec) null);
