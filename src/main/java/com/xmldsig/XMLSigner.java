@@ -41,9 +41,9 @@ public class XMLSigner {
 	public static void signXMLDocument(Document document, PrivateKey privateKey, X509Certificate certificate) throws Exception {
 		XMLSignatureFactory factory = XMLSignatureFactory.getInstance("DOM");
 
-		DigestMethod digestMethod = factory.newDigestMethod("http://www.w3.org/2001/04/xmldsig-more#gostr3411", null);
+		DigestMethod digestMethod = factory.newDigestMethod(DigestMethod.SHA1, null);
 		CanonicalizationMethod cm = factory.newCanonicalizationMethod(CanonicalizationMethod.EXCLUSIVE_WITH_COMMENTS, (C14NMethodParameterSpec) null);
-		SignatureMethod sm = factory.newSignatureMethod("http://www.w3.org/2001/04/xmldsig-more#gostr34102001-gostr3411", null);
+		SignatureMethod sm = factory.newSignatureMethod(SignatureMethod.RSA_SHA1, null);
 
 		Transform envTransform = factory.newTransform(Transforms.TRANSFORM_ENVELOPED_SIGNATURE, (TransformParameterSpec) null);
 		Transform exc14nTransform = factory.newTransform(CanonicalizationMethod.EXCLUSIVE, (TransformParameterSpec) null);

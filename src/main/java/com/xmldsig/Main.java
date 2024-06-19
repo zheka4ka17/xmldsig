@@ -3,7 +3,7 @@ package com.xmldsig;
 import org.apache.xml.security.utils.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import ru.CryptoPro.JCP.JCP;
+
 
 
 import java.io.File;
